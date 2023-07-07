@@ -1,0 +1,22 @@
+# ------ Repository-root ignores
+
+# Ignore auxiliary materials directory
+/.materials
+
+# Ignore secrets directory
+/.secrets
+
+
+# ------ Repository-wide ignores
+
+# Ignore VSCode root workspace files directory in any location
+.vscode
+
+# Ignore JetBrains IDE's root project folder in any location
+.idea
+
+
+# Ignore Python Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
