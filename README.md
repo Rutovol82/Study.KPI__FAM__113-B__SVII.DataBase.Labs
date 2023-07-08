@@ -16,3 +16,23 @@ with ZNO results for the next years:
 
 All datasets and legends for them can be downloaded from the official 
 [*UCEQA website*](https://zno.testportal.com.ua/opendata).
+
+
+## Compose services & startup instructions
+
+### Initial build
+
+Before running services, you need to build docker-compose.
+It can be done using the next command:
+
+```bach
+docker-compose build --no-cache
+```
+
+### Database deployment
+
+To run the database service you can execute the next command:
+
+```bach
+docker-compose up -d database
+```

@@ -1,0 +1,40 @@
+version: '3.9'
+
+
+services:
+
+  # Database service
+  database:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=znoOData
+      - POSTGRES_USER=Rutovol82
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    networks:
+      - service_ntw
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "znoOData", "-U", "Rutovol82" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  db-data:
+
+
+secrets:
+  db-password:
+    file: .secrets/db-password
+
+
+networks:
+  service_ntw:
