@@ -1,0 +1,2 @@
+# This is an extra requirements file, declares not project-common dependencies, required by some command scripts.
+# Primary requirements file located in the lib/ directory.

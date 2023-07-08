@@ -1,0 +1,8 @@
+# This is the PRIMARY requirements file for the `db_utils` project.
+
+# By design, this file declares requirements for the `db_utils_lib`, which contains the most part of the project code.
+# There is no need to duplicate requirements in the 'program' part of the project.
+
+# Use the utils/requirements.txt ONLY to declare an extra requirements,
+# NOT common for the whole project (all dependencies, listed in the current file are considered as project-common :)),
+# but required by some scripts in the utils/scripts.
