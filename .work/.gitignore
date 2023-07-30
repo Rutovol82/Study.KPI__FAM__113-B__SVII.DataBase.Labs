@@ -1,2 +1,5 @@
 # Ignore huge data files directories
 /.zno-odata-files
+
+# Ignore timing files
+*.timing.csv
