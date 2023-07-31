@@ -1,0 +1,73 @@
+typing:
+  null-alias: ['null']
+  types-map:
+    'year': int
+    'examinee\$birth_year': int
+    '.*score(_12)?': '[null] int'
+    '.*score_100': '[null] decimal'
+    '.*adapt_scale': '[null] int'
+    '.*': '[null][quote] str'
+
+treatment:
+  vals-format-map:
+    '.*score(_12|_100)?': 
+      - ['(\d*),(\d*)', '\g<1>.\g<2>']
+    '.*dpa_level':
+      - ['(?i)стандарт\(академічний\)', 'академічний']
+    'examinee\$edu\$status': 
+      - ['(?i)Випускник закладу загальної середньої освіти 20(19|20) року', 
+         'Випускник ЗСЗО']
+      - ['(?i)Випускник, який здобуде в 20(19|20) році повну загальну середню освіту в закордонному закладі освіти',
+         'Випускник ЗСЗО іншої держави']
+      - ['(?i)Випускник минулих років',
+         'Випускник ЗСЗО минуліх років']
+      - ['(?i)Учень \(слухач\) закладу професійної \(професійно-технічної\) освіти',
+         'Учень (слухач) ЗПО (ЗПТО)']
+      - ['(?i)Студент закладу вищої освіти',
+         'Студент ВНЗ']
+
+  cols-format-map:
+    - ['(?i)^OutID$', 'id']
+
+    - ['(?i)^Birth$', 'examinee$birth_year']
+    - ['(?i)^SEXTYPENAME$', 'examinee$sex']
+
+    - ['(?i)^REGTYPENAME$', 'examinee$edu$status']
+
+    - ['(?i)^(?P<loc>REGNAME|AREANAME|TERNAME)$', 'examinee$residence$location$$\g<loc>']
+    - ['(?i)^TerTypeName$', 'examinee$residence_tertype']
+
+    - ['(?i)^ClassProfileName$', 'examinee$edu$class$profile']
+    - ['(?i)^ClassLangName$', 'examinee$edu$class$lang']
+
+    - ['(?i)^EONAME$', 'examinee$edu$org$name']
+    - ['(?i)^EOTYPENAME$', 'examinee$edu$org$type']
+    - ['(?i)^EOParent$', 'examinee$edu$org$supervisor']
+    - ['(?i)^EO(?P<loc>REGNAME|AREANAME|TERNAME)$', 'examinee$edu$org$loc$location$$\g<loc>']
+
+    - ['(?i)^ukr', 'test$ukr_lang_lit$test$$']
+    - ['(?i)^hist', 'test$ukr_history$test$$']
+    - ['(?i)^math', 'test$math$test$$']
+    - ['(?i)^phys', 'test$physics$test$$']
+    - ['(?i)^chem', 'test$chemistry$test$$']
+    - ['(?i)^bio', 'test$biology$test$$']
+    - ['(?i)^geo', 'test$geography$test$$']
+    - ['(?i)^eng', 'test$eng_lang$test$$']
+    - ['(?i)^fra', 'test$fra_lang$test$$']
+    - ['(?i)^deu', 'test$deu_lang$test$$']
+    - ['(?i)^spa', 'test$spa_lang$test$$']
+
+    - ['(?i)test\$\$Test$', 'subject$name']
+    - ['(?i)test\$\$TestStatus$', 'status']
+    - ['(?i)test\$\$Lang$', 'lang']
+    - ['(?i)test\$\$AdaptScale$', 'adapt_scale']
+    - ['(?i)test\$\$DPALevel$', 'dpa_level']
+    - ['(?i)test\$\$Ball$', 'score']
+    - ['(?i)test\$\$Ball12$', 'score_12']
+    - ['(?i)test\$\$Ball100$', 'score_100']
+    - ['(?i)test\$\$PTName$', 'point$name']
+    - ['(?i)test\$\$PT(?P<loc>REGNAME|AREANAME|TERNAME)$', 'point$loc$location$$\g<loc>']
+
+    - ['(?i)location\$\$RegName$', 'region']
+    - ['(?i)location\$\$AreaName$', 'area']
+    - ['(?i)location\$\$TerName$', 'territory']

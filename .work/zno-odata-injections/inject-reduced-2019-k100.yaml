@@ -1,0 +1,17 @@
+id: 'odata-demo-01'
+
+options:
+  atom-size: 1000
+
+sources:
+  '2019':
+    file: 
+      path: .zno-odata-files-test/Odata2019File.reduced.csv
+      encoding: utf-8-sig
+    properties: {'year': '2019'}
+    specifics:
+      file:
+        csv-opts: {delimiter: ';'}
+    specifics-file: 
+      path: zno-odata-injections/.specifics/2019-2020-specifics.yaml
+      encoding: utf-8

@@ -1,0 +1,29 @@
+id: 'odata-init-2020-2021'
+
+options:
+  atom-size: 1000
+
+sources:
+  '2020':
+    file: 
+      path: .zno-odata-files/Odata2020File.csv
+      encoding: cp1251
+    properties: {'year': '2020'}
+    specifics:
+      file:
+        csv-opts: {delimiter: ';'}
+    specifics-file: 
+      path: zno-odata-injections/.specifics/2019-2020-specifics.yaml
+      encoding: utf-8
+
+  '2021':
+    file: 
+      path: .zno-odata-files/Odata2021File.csv
+      encoding: utf-8-sig
+    properties: {'year': '2021'}
+    specifics:
+      file:
+        csv-opts: {delimiter: ';'}
+    specifics-file: 
+      path: zno-odata-injections/.specifics/2021-specifics.yaml
+      encoding: utf-8
