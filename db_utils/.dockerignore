@@ -1,0 +1,13 @@
+# Ignore JetBrains IDE's project directory
+.idea
+
+# Ignore VSCode workspace directory
+.vscode
+
+# Ignore Virtualenv virtual environment
+.venv
+
+# Ignore Python Byte-compiled / optimized / DLL files
+**/__pycache__
+*.py[cod]
+*$py.class

@@ -3,6 +3,83 @@ version: '3.9'
 
 services:
 
+  # Service, runs database initialization
+  # (will not have an effect if tables already exist)
+  maintenance__init-db:
+    build: ./db_utils/
+    secrets:
+      - db-password
+    command: [ "python", "-m", "db_utils",
+               "-h", "database", "-p", "5432",
+               "-d", "znoOData", "-U", "Rutovol82",
+               "-P", "@/run/secrets/db-password",
+               "-lL", "INFO",
+               "init" ]
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - init-db
+
+  # Service, runs test ZNO OData injection
+  maintenance__inject__test-data:
+    build: ./db_utils/
+    secrets:
+      - db-password
+    volumes:
+      - ./.work/.zno-odata-files-test:/.work/.zno-odata-files-test:read_only
+      - zno-odata-injection-cache:/.work/zno-odata-injection-cache
+      - ./.work/zno-odata-injections:/.work/zno-odata-injections
+    command: [ "python", "-m", "db_utils",
+               "-h", "database", "-p", "5432",
+               "-d", "znoOData", "-U", "Rutovol82",
+               "-P", "@/run/secrets/db-password",
+               "-lL", "INFO",
+               "-fT", "zno-odata-injections/inject-reduced-2019-k100.timing.csv",
+               "inject",
+               "zno-odata-injections/inject-reduced-2019-k100.yaml",
+               "-M", "CACHE_DISABLE" ]
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - inject__test-data
+
+  # Service, runs work ZNO OData injection for years 2020-2021
+  # (data files will be downloaded if not exists)
+  maintenance__inject__work-data:
+    build: ./db_utils/
+    secrets:
+      - db-password
+    volumes:
+      - zno-odata-files:/.work/.zno-odata-files
+      - zno-odata-injection-cache:/.work/zno-odata-injection-cache
+      - ./.work/zno-odata-injections:/.work/zno-odata-injections
+      - ./.work/.scripts:/.work/.scripts:read_only
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        .scripts/download.sh -Fd .zno-odata-files -Bf -y 2020 -y 2021
+        python -m db_utils -h database -p 5432                                      \
+                           -d znoOData -U Rutovol82                                 \
+                           -P @/run/secrets/db-password                             \
+                           -lL INFO                                                 \
+                           -fT zno-odata-injections/inject-2020-2021.timing.csv     \
+                           inject                                                   \
+                           zno-odata-injections/inject-2020-2021.yaml               \
+                           -M CACHE_DISABLE
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - inject__work-data
+
   # Database service
   database:
     image: postgres
@@ -29,6 +106,8 @@ services:
 
 volumes:
   db-data:
+  zno-odata-files:
+  zno-odata-injection-cache:
 
 
 secrets:
