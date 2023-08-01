@@ -1,2 +1,5 @@
 # Set automatic text files line endings normalization
 * text=auto
+
+# Always keep LF endings in shell scripts
+*.sh text eol=lf
