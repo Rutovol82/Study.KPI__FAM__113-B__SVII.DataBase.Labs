@@ -1,0 +1,2 @@
+INSERT INTO zno_odata_records ({columns})
+       VALUES ({values_placeholders})
