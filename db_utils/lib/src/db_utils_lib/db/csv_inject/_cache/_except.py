@@ -1,0 +1,2 @@
+class CacheInternalError(IOError):
+    pass
