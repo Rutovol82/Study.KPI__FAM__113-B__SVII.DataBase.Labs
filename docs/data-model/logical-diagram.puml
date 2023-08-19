@@ -1,0 +1,136 @@
+@startuml
+
+
+' -- Diagram settings
+
+' -- -- Visual settings setup
+
+' hide entity icons
+hide circle
+
+
+' ------ Third-party entities
+
+' ------ --- Administrative-Territorial division
+together {
+
+    ' region
+    entity "Region" as region
+    {
+        * name
+    }
+
+    ' region area
+    entity "Area" as area
+    {
+        * name
+    }
+
+    area }o--|| region : region
+
+    ' area territory
+    entity "Territory" as territory
+    {
+        * name
+    }
+
+    territory }o--|| area : area
+}
+
+
+' ------ --- Educational organizations info
+together {
+    ' educational organization
+    entity "Edu organization" as edu_org
+    {
+        * name
+        type
+    }
+
+    ' educational organization supervisor ('parent')
+    entity "Edu supervisor" as edu_super
+    {
+        * name
+    }
+
+    edu_org }o--o| edu_super : parent
+    edu_org }o--o| territory : location
+}
+
+
+' ------ --- Testing points info
+together {
+
+    ' testing point
+    entity "Test point" as test_point
+    {
+        * name
+    }
+
+    test_point }o--o| territory : location
+}
+
+
+' ------ Primary entities
+
+' ------ --- Subject &  test pass entities
+together {
+
+    ' test subject entity
+    entity "Subject" as subject
+    {
+        * code
+        name
+    }
+
+    ' test pass information
+    entity "Test pass" as test_pass
+    {
+        * status
+        ..
+        dpa_level
+        test_lang
+        adapt_scale
+        ..
+        score
+        score_12
+        score_100
+    }
+
+    test_pass ||--|| subject : subject
+    test_pass }o--o| test_pass : sub_test
+    test_pass }o--o| test_point : point
+}
+
+
+' ------ --- Record & examinee data entities
+together {
+
+    ' examinee information
+    entity "Examinee data" as examinee_data
+    {
+        sex
+        birth
+        ..
+        residence_terrtype
+        ..
+        edu_status
+        edu_lang
+        edu_profile
+    }
+
+    examinee_data }o--o| territory : residence
+    examinee_data }o--o| edu_org : edu_org
+
+    ' OpenData record
+    entity "Record" as record
+    {
+        * id
+        year
+    }
+
+    record ||--o| examinee_data : examinee
+    record ||--o{ test_pass : tests
+}
+
+@enduml

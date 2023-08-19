@@ -1,0 +1,224 @@
+@startuml
+
+
+' -- Diagram settings
+
+' -- -- Visual settings setup
+
+' hide entity icons
+hide circle
+
+' Ugly trick :(
+' Make 'ActivityDiamond' elements invisible to use them as structural connector
+skinparam ActivityDiamondBackgroundColor transparent
+skinparam ActivityDiamondBorderColor transparent
+
+' -- -- Custom macro definitions
+
+' -- -- -- Database table pseudo-element
+!define Table(name, title) class name as "title"
+!define Table(name) class name
+
+' -- -- -- Database table primary key highlight
+!define PK(attr) <b> attr </b>
+
+
+' -- Third-party entities
+
+' -- -- Administrative-Territorial division
+together {
+
+    ' region
+    Table(regions)
+    {
+        * PK(region_id): INT <<PK>>, <<generated>>
+        --
+        * region_name: VARCHAR
+    }
+
+    ' region area
+    Table(areas)
+    {
+        * PK(area_id): INT <<PK>>, <<generated>>
+        --
+        * region_id: INT <<FK>>
+        * area_name: VARCHAR
+    }
+
+    areas::region_id }o--|| regions
+
+    ' area territory
+    Table(territories)
+    {
+        * PK(terr_id): INT <<PK>>, <<generated>>
+        --
+        * area_id: INT <<FK>>
+        * terr_name: VARCHAR
+    }
+
+    territories::area_id }o--|| areas
+}
+
+
+' -- -- Educational information auxiliaries
+together {
+
+    ' language accepted to be used in education/testing
+    Table(edu_langs)
+    {
+        * PK(lang_id): INT <<PK>>, <<generated>>
+        --
+        * lang_name: VARCHAR
+    }
+
+    ' educational profiles
+    Table(edu_profiles)
+    {
+        * PK(profile_id): INT <<PK>>, <<generated>>
+        --
+        * profile_name: VARCHAR
+    }
+}
+
+
+' -- -- Educational organizations info
+together {
+
+    ' educational organizations types
+    Table(edu_orgtypes)
+    {
+        * PK(type_id): INT <<PK>>, <<generated>>
+        --
+        * type_name: VARCHAR
+    }
+
+    ' educational organization supervisor ('parent')
+    Table(edu_supers)
+    {
+        * PK(super_id): INT <<PK>>, <<generated>>
+        --
+        * super_name: VARCHAR
+    }
+
+    ' educational organization
+    Table(edu_orgs)
+    {
+        * PK(org_id): INT <<PK>>, <<generated>>
+        --
+        * org_name: VARCHAR
+        location_terr_id: INT <<FK>>
+        orgtype_id: INT <<FK>>
+        super_id: INT <<FK>>
+    }
+
+    edu_orgs::location_terr_id }o--o| territories
+    edu_orgs::orgtype_id }o--o| edu_orgtypes
+    edu_orgs::super_id }o--o| edu_supers
+}
+
+
+' -- -- Testing points info
+
+' testing point
+Table(test_points)
+{
+    * PK(point_id): INT <<PK>>, <<generated>>
+    --
+    * point_name: VARCHAR
+    location_terr_id: INT <<FK>>
+}
+
+test_points::location_terr_id }o--o| territories
+
+
+' -- Primary entities
+
+' -- -- Record & examinee data entities
+together {
+
+    ' examinee information
+    Table(examinees_data)
+    {
+        * PK(examinee_id): INT <<PK>>, <<generated>>
+        --
+        sex: sex
+        birth_year: SMALLINT
+        ..
+        residence_terr_id: INT <<FK>>
+        residence_terrtype: terrtype
+        ..
+        edu_profile_id: INT <<FK>>
+        edu_lang_id: INT <<FK>>
+        ..
+        edu_org_id: INT <<FK>>
+        edu_status: edu_status
+    }
+
+    examinees_data::residence_terr_id }o--o| territories
+    examinees_data::edu_profile_id }o--o| edu_profiles
+    examinees_data::edu_lang_id }o--o| edu_langs
+    examinees_data::edu_org_id }o--o| edu_orgs
+
+    ' OpenData record
+    Table(records)
+    {
+        * PK(record_id): CHAR(36) <<PK>>
+        --
+        * record_year: SMALLINT
+        examinee_id: INT <<FK>>
+    }
+
+    records::examinee_id }o--o| examinees_data
+}
+
+
+' -- -- Subject & test pass entities
+together {
+
+    ' test subject entity
+    Table(subjects)
+    {
+        * PK(subject_id): INT <<PK>>, <<generated>>
+        --
+        * subject_code: VARCHAR(64) <<unique>>
+        subject_name: VARCHAR
+    }
+
+    ' -- -- -- Test pass entity
+
+    ' test pass information
+    Table(test_passes)
+    {
+        * PK(pass_id): INT <<PK>>, <<generated>>
+        --
+        * record_id: CHAT(36) <<FK>>
+        * subject_id: INT <<FK>>
+        ..
+        * test_status: test_status
+        super_pass_id: INT <<FK>>
+        ..
+        test_point_id: INT <<FK>>
+        ..
+        test_lang_id: INT <<FK>>
+        adapt_scale: SMALLINT
+        dpa_level: dpa_level
+        ..
+        score: SMALLINT
+        score_12: SMALLINT
+        score_100: DECIMAL(4, 1)
+    }
+
+    ' test_pass primary relationships
+    test_passes::record_id }o--|| records
+    test_passes::subject_id }o--|| subjects
+    ' test_pass self-mention 'superpass' relationship
+    <> _
+    test_passes::super_pass_id }o-- _
+    test_passes::pass_id |o-- _
+    ' test_pass secondary relationships
+    test_passes::test_point_id }o--o| test_points
+    test_passes::test_lang_id }o--o| edu_langs
+}
+
+
+@enduml

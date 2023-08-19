@@ -18,6 +18,17 @@ All datasets and legends for them can be downloaded from the official
 [*UCEQA website*](https://zno.testportal.com.ua/opendata).
 
 
+## (Normalized, V2) Data model & database diagrams
+
+### Logical (entities) diagram
+
+![datamodel-logical-diagram](docs/data-model/logical-diagram.svg)
+
+### Physical (database) diagram
+
+![database-physical-diagram](docs/data-model/physical-diagram.svg)
+
+
 ## Compose profiles & startup instructions
 
 ### Initial build
