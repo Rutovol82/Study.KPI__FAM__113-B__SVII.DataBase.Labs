@@ -54,44 +54,103 @@ docker-compose up -d database
 To be maximally suitable for all purposes, [`docker-compose.yaml`](docker-compose.yaml)
 for the current work includes several different profiles.
 
-* #### init-db
+#### Maintenance profiles
 
-  Runs `database` service and `maintenance__init-db` service,
-  provides database initialization  
-  (will not have an effect if tables already exist)
+- ##### V1.1 (*#lab-1 #primary*) schema
+
+  * ###### V1.1__init-db
+
+    Runs `database` service and `maintenance__v1.1__init-db` service,
+    provides the __V1.1__ (*#lab-1 #primary*) database schema initialization  
+    (will not have an effect if tables already exist)
+    
+    &nbsp;
+  
+    > **Warning**
+    > 
+    > It is not recommended to initialize a clear database using this option,
+    > because it will not create Flyway schema history table.  
+    > 
+    > Use the corresponding [Flyway migrate profile](#flyway-profiles) instead.
+
+    &nbsp;
+
+    Startup command example:
+  
+    ```bach
+    docker-compose --profile V1.1__init-db up -d --force-recreate
+    ```
+
+  * ###### V1.1__inject__test-data
+
+    Runs `database` service and `maintenance__v1.1__inject__test-data` service, 
+    provides test ZNO OData injection as configured by 
+    [`inject-reduced-2019-k100.yaml`](.work/zno-odata-injections/inject-reduced-2019-k100.yaml)
+    into the database, which schema corresponds to the __V1.1__ (*#lab-1 #primary*).
+  
+    &nbsp;
+
+    Startup command example:
+  
+    ```bach
+    docker-compose --profile V1.1__inject__test-data up -d --force-recreate
+    ```
+
+  * ###### V1.1__inject__work-data
+
+    Runs `database` service and `maintenance__v1.1__inject__work-data` service, 
+    provides full ZNO OData for years __2020__ / __2021__ injection as configured by 
+    [`inject-2020-2021.yaml`](.work/zno-odata-injections/inject-2020-2021.yaml)
+    into the database, which schema corresponds to the __V1.1__ (*#lab-1 #primary*).
+  
+    &nbsp;
+
+    Startup command example:
+  
+    ```bach
+    docker-compose --profile V1.1__inject__work-data up -d --force-recreate
+    ```
+
+#### Flyway profiles
+
+* ###### migrate__nE-V1.1
+
+  Runs `database` service and `flyway__migrate__ne-v1.1` service,
+  provides flyway migration from not-versioned empty schema 
+  to __V1.1__ (*#lab-1 #primary*) schema.
 
   &nbsp;
 
   Startup command example:
-  
+
   ```bach
-  docker-compose --profile init-db up -d --force-recreate
+  docker-compose --profile migrate__nE-V1.1 up -d --force-recreate
   ```
 
-* #### inject__test-data
+* ###### migrate__nE-V2.1
 
-  Runs `database` service and `maintenance__inject__test-data` service, 
-  provides test ZNO OData injection as configured by 
-  [`inject-reduced-2019-k100.yaml`](.work/zno-odata-injections/inject-reduced-2019-k100.yaml).
-  
+  Runs `database` service and `flyway__migrate__ne-v2.1` service,
+  provides flyway migration from not-versioned empty schema 
+  to __V2.1__ (*#lab-2 #primary*) schema.
+
   &nbsp;
 
   Startup command example:
-  
+
   ```bach
-  docker-compose --profile inject__test-data up -d --force-recreate
+  docker-compose --profile migrate__nE-V2.1 up -d --force-recreate
   ```
 
-* #### inject__work-data
+* ###### migrate__nV1.1-V2.1
 
-  Runs `database` service and `maintenance__inject__work-data` service, 
-  provides full ZNO OData for years __2020__ / __2021__ injection as configured by 
-  [`inject-2020-2021.yaml`](.work/zno-odata-injections/inject-2020-2021.yaml).
-  
+  Runs `database` service and `flyway__migrate__nv1.1-v2.1` service,
+  provides flyway baseline on version __V1.1__ (*#lab-1 #primary*) 
+  and migration to __V2.1__ (*#lab-2 #primary*) schema.
+
   &nbsp;
 
   Startup command example:
-  
+
   ```bach
-  docker-compose --profile inject__work-data up -d --force-recreate
+  docker-compose --profile migrate__nV1.1-V2.1 up -d --force-recreate
   ```

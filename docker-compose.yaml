@@ -3,9 +3,9 @@ version: '3.9'
 
 services:
 
-  # Service, runs database initialization
+  # Service, runs V1.1 (#lab-1 #primary) schema database initialization
   # (will not have an effect if tables already exist)
-  maintenance__init-db:
+  maintenance__v1.1__init-db:
     build: ./db_utils/
     secrets:
       - db-password
@@ -21,10 +21,11 @@ services:
       database:
         condition: service_healthy
     profiles:
-      - init-db
+      - V1.1__init-db
 
   # Service, runs test ZNO OData injection
-  maintenance__inject__test-data:
+  # into the V1.1 (#lab-1 #primary) schema database
+  maintenance__v1.1__inject__test-data:
     build: ./db_utils/
     secrets:
       - db-password
@@ -47,11 +48,12 @@ services:
       database:
         condition: service_healthy
     profiles:
-      - inject__test-data
+      - V1.1__inject__test-data
 
   # Service, runs work ZNO OData injection for years 2020-2021
+  # into the V1.1 (#lab-1 #primary) schema database
   # (data files will be downloaded if not exists)
-  maintenance__inject__work-data:
+  maintenance__v1.1__inject__work-data:
     build: ./db_utils/
     secrets:
       - db-password
@@ -78,7 +80,85 @@ services:
       database:
         condition: service_healthy
     profiles:
-      - inject__work-data
+      - V1.1__inject__work-data
+
+  # Service, runs flyway migration from
+  # not-versioned empty schema to V1.1 (#lab-1 #primary)
+  flyway__migrate__ne-v1.1:
+    image: flyway/flyway
+    secrets:
+      - db-password
+    volumes:
+      - ./flyway/conf:/flyway/conf
+      - ./flyway/sql:/flyway/sql
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://database:5432/znoOData
+      - FLYWAY_USER=Rutovol82
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        flyway -configFiles="/flyway/conf/migration__nE-V1.1__flyway.conf"      \
+               -password="$$(cat "/run/secrets/db-password")"                   \
+               migrate
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - migrate__nE-V1.1
+
+  # Service, runs flyway migration from
+  # not-versioned empty schema to V2.1 (#lab-2 #primary)
+  flyway__migrate__ne-v2.1:
+    image: flyway/flyway
+    secrets:
+      - db-password
+    volumes:
+      - ./flyway/conf:/flyway/conf
+      - ./flyway/sql:/flyway/sql
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://database:5432/znoOData
+      - FLYWAY_USER=Rutovol82
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        flyway -configFiles="/flyway/conf/migration__nE-V2.1__flyway.conf"      \
+               -password="$$(cat "/run/secrets/db-password")"                   \
+               migrate
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - migrate__nE-V2.1
+
+  # Service, runs flyway baseline on version V1.1
+  # and migration to V2.1 (#lab-2 #primary)
+  flyway__migrate__nv1.1-v2.1:
+    image: flyway/flyway
+    secrets:
+      - db-password
+    volumes:
+      - ./flyway/conf:/flyway/conf
+      - ./flyway/sql:/flyway/sql
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://database:5432/znoOData
+      - FLYWAY_USER=Rutovol82
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        flyway -configFiles="/flyway/conf/migration__nV1.1-V2.1__flyway.conf"     \
+               -password="$$(cat "/run/secrets/db-password")"                     \
+               migrate
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - migrate__nV1.1-V2.1
 
   # Database service
   database:
