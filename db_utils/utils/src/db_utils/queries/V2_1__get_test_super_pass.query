@@ -1,0 +1,9 @@
+CASE
+    WHEN {super_pass_condition}
+    THEN
+    (
+        SELECT test_passes.pass_id FROM test_passes
+            WHERE test_passes.record_id = %(id)s
+              AND subject_id = {super_pass_subject_id}
+    )
+END

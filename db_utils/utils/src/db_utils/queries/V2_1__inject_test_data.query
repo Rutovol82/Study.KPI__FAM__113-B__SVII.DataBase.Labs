@@ -1,0 +1,15 @@
+INSERT INTO test_passes (record_id, subject_id,
+                         test_status, super_pass_id,
+                         test_point_id,
+                         test_lang_id,
+                         {other_columns})
+    VALUES(
+        %(id)s,
+        {subject_id},
+        {test_status},
+        {super_pass_id},
+        {test_point_id},
+        {test_lang_id},
+        {other_values_placeholders}
+    )
+RETURNING pass_id

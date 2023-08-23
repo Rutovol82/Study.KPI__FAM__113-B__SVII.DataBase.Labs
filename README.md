@@ -111,6 +111,38 @@ for the current work includes several different profiles.
     docker-compose --profile V1.1__inject__work-data up -d --force-recreate
     ```
 
+- ##### V2.1 (*#lab-2 #primary*) schema
+
+  * ###### V2.1__inject__test-data
+
+    Runs `database` service and `maintenance__v2.1__inject__test-data` service, 
+    provides test ZNO OData injection as configured by 
+    [`inject-reduced-2019-k100.yaml`](.work/zno-odata-injections/inject-reduced-2019-k100.yaml)
+    into the database, which schema corresponds to the __V2.1__ (*#lab-2 #primary*).
+  
+    &nbsp;
+
+    Startup command example:
+  
+    ```bach
+    docker-compose --profile V2.1__inject__test-data up -d --force-recreate
+    ```
+
+  * ###### V2.1__inject__work-data
+
+    Runs `database` service and `maintenance__v2.1__inject__work-data` service, 
+    provides full ZNO OData for years __2020__ / __2021__ injection as configured by 
+    [`inject-2020-2021.yaml`](.work/zno-odata-injections/inject-2020-2021.yaml)
+    into the database, which schema corresponds to the __V2.1__ (*#lab-2 #primary*).
+  
+    &nbsp;
+
+    Startup command example:
+  
+    ```bach
+    docker-compose --profile V2.1__inject__work-data up -d --force-recreate
+    ```
+
 #### Flyway profiles
 
 * ###### migrate__nE-V1.1

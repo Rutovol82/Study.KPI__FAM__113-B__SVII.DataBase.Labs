@@ -15,7 +15,7 @@ from db_utils_lib.io.argparse import CompileFlag
 from .. import queries
 from . import db_utils_command
 
-from .init import db_init
+from .V1_1__init import db_init
 
 # from loguru import logger
 from db_utils_lib.runtimer import runtimer
@@ -34,7 +34,7 @@ class db_injector:
     # ------ SQL queries class variables
 
     # Injection query pattern (from resources)
-    _QUERY_PATTERN_INJECT = pgsql.SQL(resources.read_text(queries, 'inject_row.query'))
+    _QUERY_PATTERN_INJECT = pgsql.SQL(resources.read_text(queries, 'V1_1__inject_row.query'))
 
     # ------ Protected fields
 
@@ -95,8 +95,9 @@ class db_injector:
 # ------ Command script setup & entry point
 
 @db_utils_command.entry_point(
-    command='inject',
-    description="Injects data into ZNO Open Data database. "
+    command='V1.1__inject',
+    description="Injects data into ZNO Open Data database "
+                "of V1.1 (#lab-1 #primary) schema. "
                 "Injections configures mainly through the special "
                 "injection config files in .yaml format",
     args=[
@@ -121,7 +122,7 @@ def __command__(dumper: Dumper, cfg_path: str, cfg_encoding: str = None,
                 inject_table: str = 'injections', do_init: bool = True,
                 mode: int | csv_inject.Mode = 0, **__):
     """
-    `inject` command script entry point.
+    `V1.1__inject` command script entry point.
 
       Runs database injection procedure.
 

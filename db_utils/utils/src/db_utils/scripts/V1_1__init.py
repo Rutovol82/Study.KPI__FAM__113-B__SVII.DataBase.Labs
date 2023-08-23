@@ -19,7 +19,7 @@ __all__ = ['__command__', 'db_init']
 # ------ Command script body
 
 # Database initialization query (from resources)
-_DB_INIT_QUERY = pgsql.SQL(resources.read_text(queries, 'init.sql'))
+_DB_INIT_QUERY = pgsql.SQL(resources.read_text(queries, 'V1_1__init.sql'))
 
 
 @transactional
@@ -46,10 +46,15 @@ def db_init(dumper: Dumper):
 
 # ------ Command script setup & entry point
 
-@db_utils_command.entry_point(command='init', description="Initialize ZNO Open Data database.")
+@db_utils_command.entry_point(
+        command='V1.1__init', 
+        description="(Not recommended!) "
+                    "Initialize ZNO Open Data database "
+                    "with V1.1 (#lab-1 #primary) schema."
+)
 def __command__(dumper: Dumper, **__):
     """
-    `init` command script entry point.
+    `V1.1__init` command script entry point.
 
       Runs database injection procedure.
 

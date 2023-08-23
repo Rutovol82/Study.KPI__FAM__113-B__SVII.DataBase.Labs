@@ -1,0 +1,4 @@
+get_test_point(
+    name_ := {name},
+    location_ := {location}
+)

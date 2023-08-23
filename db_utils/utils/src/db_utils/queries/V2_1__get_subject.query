@@ -1,0 +1,3 @@
+SELECT subject_id AS id
+FROM subjects
+WHERE subject_code = %(code)s

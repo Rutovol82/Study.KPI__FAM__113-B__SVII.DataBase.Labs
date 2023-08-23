@@ -1,0 +1,6 @@
+get_edu_org(
+    name_ := {name},
+    supervisor_ := {supervisor},
+    type_ := {type},
+    location_ := {location}
+)

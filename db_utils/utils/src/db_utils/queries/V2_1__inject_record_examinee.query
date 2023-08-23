@@ -1,0 +1,15 @@
+INSERT INTO records (record_id, record_year, examinee_id)
+    VALUES(
+        %(id)s,
+        %(year)s,
+        new_examinee(
+            sex_ := {examinee_sex}::sex,
+            birth_year_ := {examinee_birth_year}::smallint,
+            residence_ := {examinee_residence},
+            residence_terrtype_ := {examinee_residence_terrtype}::terrtype,
+            edu_profile_ := {examinee_edu_profile},
+            edu_lang_ := {examinee_edu_lang},
+            edu_org_ := {examinee_edu_org},
+            edu_status_ := {examinee_edu_status}::edu_status
+        )
+    )

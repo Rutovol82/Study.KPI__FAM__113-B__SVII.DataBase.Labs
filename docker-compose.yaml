@@ -14,7 +14,7 @@ services:
                "-d", "znoOData", "-U", "Rutovol82",
                "-P", "@/run/secrets/db-password",
                "-lL", "INFO",
-               "init" ]
+               "V1.1__init" ]
     networks:
       - service_ntw
     depends_on:
@@ -39,7 +39,7 @@ services:
                "-P", "@/run/secrets/db-password",
                "-lL", "INFO",
                "-fT", "zno-odata-injections/inject-reduced-2019-k100.timing.csv",
-               "inject",
+               "V1.1__inject",
                "zno-odata-injections/inject-reduced-2019-k100.yaml",
                "-M", "CACHE_DISABLE" ]
     networks:
@@ -71,7 +71,7 @@ services:
                            -P @/run/secrets/db-password                             \
                            -lL INFO                                                 \
                            -fT zno-odata-injections/inject-2020-2021.timing.csv     \
-                           inject                                                   \
+                           V1.1__inject                                             \
                            zno-odata-injections/inject-2020-2021.yaml               \
                            -M CACHE_DISABLE
     networks:
@@ -81,6 +81,65 @@ services:
         condition: service_healthy
     profiles:
       - V1.1__inject__work-data
+
+  # Service, runs test ZNO OData injection
+  # into the V2.1 (#lab-2 #primary) schema database
+  maintenance__v2.1__inject__test-data:
+    build: ./db_utils/
+    secrets:
+      - db-password
+    volumes:
+      - ./.work/.zno-odata-files-test:/.work/.zno-odata-files-test:read_only
+      - zno-odata-injection-cache:/.work/zno-odata-injection-cache
+      - ./.work/zno-odata-injections:/.work/zno-odata-injections
+    command: [ "python", "-m", "db_utils",
+               "-h", "database", "-p", "5432",
+               "-d", "znoOData", "-U", "Rutovol82",
+               "-P", "@/run/secrets/db-password",
+               "-lL", "INFO",
+               "-fT", "zno-odata-injections/inject-reduced-2019-k100.timing.csv",
+               "V2.1__inject",
+               "zno-odata-injections/inject-reduced-2019-k100.yaml",
+               "-M", "CACHE_DISABLE" ]
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - V2.1__inject__test-data
+
+  # Service, runs work ZNO OData injection for years 2020-2021
+  # into the V2.1 (#lab-2 #primary) schema database
+  # (data files will be downloaded if not exists)
+  maintenance__v2.1__inject__work-data:
+    build: ./db_utils/
+    secrets:
+      - db-password
+    volumes:
+      - zno-odata-files:/.work/.zno-odata-files
+      - zno-odata-injection-cache:/.work/zno-odata-injection-cache
+      - ./.work/zno-odata-injections:/.work/zno-odata-injections
+      - ./.work/.scripts:/.work/.scripts:read_only
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        .scripts/download.sh -Fd .zno-odata-files -Bf -y 2020 -y 2021
+        python -m db_utils -h database -p 5432                                      \
+                           -d znoOData -U Rutovol82                                 \
+                           -P @/run/secrets/db-password                             \
+                           -lL INFO                                                 \
+                           -fT zno-odata-injections/inject-2020-2021.timing.csv     \
+                           V2.1__inject                                             \
+                           zno-odata-injections/inject-2020-2021.yaml               \
+                           -M CACHE_DISABLE
+    networks:
+      - service_ntw
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - V2.1__inject__work-data
 
   # Service, runs flyway migration from
   # not-versioned empty schema to V1.1 (#lab-1 #primary)
