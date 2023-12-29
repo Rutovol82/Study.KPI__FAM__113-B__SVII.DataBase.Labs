@@ -1,0 +1,37 @@
+{% macro render_examinees_query_page_table(keys, rows) %}
+
+    <!-- View page table -->
+    <div class="table-responsive">
+        <table class="table table-auto">
+            <thead>
+                <tr>
+                    {% for key in keys %}
+                        <th scope="col">{{ key }}</th>
+                    {% endfor %}
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for key in keys %}
+                            <td>{{ row[key] }}</td>
+                        {% endfor %}
+
+                        {#<td class="d-flex justify-content-end">
+                            <div class="btn-group" role="group">
+
+                                <button type="button"
+                                        class="btn btn-primary trigger-subquery"
+                                        data-entity-identity="{{ row["id"] }}"
+                                >View Tests</button>
+
+                            </div>
+                        </td>#}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endmacro %}

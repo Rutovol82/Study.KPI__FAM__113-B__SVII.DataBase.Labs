@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% from 'renderers/examinees_query_table.html' import render_examinees_query_page_table %}
+{% from 'renderers/views/page_paginator.html' import render_view_page_paginator %}
+
+
+{% block content %}
+
+    <!-- View page body -->
+    <div class="container">
+
+        <div class="container" id="table_container">
+            {{ render_examinees_query_page_table(keys=data_keys, rows=data_rows) }}
+        </div>
+
+        <!-- View page controls -->
+        <div class="container">
+            <div class="d-flex justify-content-between">
+                <nav class="col">
+                    <!-- View page paginator -->
+                    {{ render_view_page_paginator(None) }}
+                </nav>
+                <div>
+                    <!-- New entity button -->
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#query-form-modal"
+                            data-entity-action="create"
+                    >New</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Form modal -->
+    <div class="modal fade"
+         id="query-form-modal"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false"
+         aria-labelledby="staticBackdropLabel"
+         aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Create/Update</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ render_form(form=query_form, action=query_action, method=query_method) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary trigger-query-form-submit">Query</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+
+    <script>
+
+        const _queryFormModalElement = document.getElementById("query-form-modal");
+        const _queryFormModalBody = _queryFormModalElement.querySelector(".modal-body") ;
+        const _queryFormModal = new bootstrap.Modal(_queryFormModalElement);
+
+        const _tableContainer = document.getElementById("table_container");
+
+        function queryTestPasses(examinee_id)
+        {
+            fetch(`/entities/{{ entity_code }}/${identity}/form`)
+                .then(response => response.text())
+                .then(html => {
+                    _queryFormModalBody.innerHTML = html;
+                    _queryFormModal.show();
+                })
+                .catch(error => { console.error('Error fetching HTML:', error); });
+        }
+
+        function submitQueryForm()
+        {
+            // Get form element
+            const entityForm = _queryFormModalBody.firstElementChild;
+
+            // Get form URL and method
+            const entityFormURL = entityForm.action;
+            const entityFormMethod = entityForm.method;
+
+            // Get form data
+            const entityFormData = new FormData(entityForm);
+
+            // Make a request using fetch
+            fetch(entityFormURL, {
+                method: entityFormMethod,
+                body: entityFormData
+            })
+            .then(async response => {
+                const html = await response.text();
+
+                if (response.status === 200)
+                {
+                    _tableContainer.innerHTML = html;
+
+                    _tableContainer.querySelectorAll('.trigger-subquery').forEach(trigger => {
+                        trigger.addEventListener('click', function () {
+                            queryExaminees(trigger.getAttribute('data-entity-identity'))
+                        })
+                    })
+
+                    _queryFormModal.hide();
+                }
+                else if (response.status === 403)
+                {
+                    _queryFormModalBody.firstElementChild.innerHTML = html;
+                }
+                else
+                {
+                    _queryFormModal.hide();
+                    window.location.reload();
+                }
+            })
+            .catch(error => { console.error('Error fetching HTML:', error); });
+        }
+
+        document.querySelectorAll('.trigger-query-form-submit').forEach(trigger => {
+            trigger.addEventListener('click', submitQueryForm);
+        })
+
+    </script>
+
+{% endblock %}

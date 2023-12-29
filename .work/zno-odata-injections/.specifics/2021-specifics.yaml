@@ -18,6 +18,8 @@ treatment:
     '.*\$sub_test\$.*': 
       - ['(?i)^Так$', 'true']
       - ['(?i)^Ні$', 'false']
+    '.*\$loc\$area':
+      - ['(?i)^(?P<city_name>м\.[^.]+)\..*$', '\g<city_name>']
     'examinee\$residence_tertype':
       - ['селище міського типу', 'СМТ']
       - ['селище, село', 'село']

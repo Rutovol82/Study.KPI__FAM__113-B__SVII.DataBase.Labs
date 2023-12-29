@@ -1,0 +1,43 @@
+{% macro render_view_page_table(keys, rows) %}
+    
+    <div class="table-responsive">
+        <table class="table table-auto">
+            <thead>
+                <tr>
+                    {% for key in keys %}
+                        <th scope="col">{{ key }}</th>
+                    {% endfor %}
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for key in keys %}
+                            <td>{{ row[key] }}</td>
+                        {% endfor %}
+
+                        <td class="d-flex justify-content-end">
+                            <div class="btn-group" role="group">
+
+                                <button type="button"
+                                        class="btn btn-danger trigger-entity-action"
+                                        data-entity-identity="{{ row["id"] }}"
+                                        data-entity-action="delete"
+                                >Delete</button>
+
+                                <button type="button"
+                                        class="btn btn-warning trigger-entity-action"
+                                        data-entity-identity="{{ row["id"] }}"
+                                        data-entity-action="update"
+                                >Edit</button>
+
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endmacro %}

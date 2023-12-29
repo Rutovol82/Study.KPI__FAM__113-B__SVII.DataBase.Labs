@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% from 'renderers/views/page_paginator.html' import render_view_page_paginator %}
+{% from 'renderers/views/page_table.html' import render_view_page_table %}
+
+
+{% block content %}
+
+    <!-- View page body -->
+    <div class="container">
+
+        <!-- View page table -->
+        {{ render_view_page_table(data_keys, data_rows) }}
+
+        <!-- View page controls -->
+        <div class="container">
+            <div class="d-flex justify-content-between">
+                <nav class="col">
+                    <!-- View page paginator -->
+                    {{ render_view_page_paginator(None) }}
+                </nav>
+                <div>
+                    <!-- New entity button -->
+                    <button type="button"
+                            class="btn btn-outline-success trigger-entity-action"
+                            data-entity-action="create"
+                    >New</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Form modal -->
+    <div class="modal fade"
+         id="entity-form-modal"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false"
+         aria-labelledby="staticBackdropLabel"
+         aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Create/Update</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary trigger-entity-form-submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+
+    <script>
+
+        const _entityFormModalElement = document.getElementById("entity-form-modal");
+        const _entityFormModalBody = _entityFormModalElement.querySelector(".modal-body") ;
+        const _entityFormModal = new bootstrap.Modal(_entityFormModalElement);
+
+
+        function submitEntityForm()
+        {
+            // Get form element
+            const entityForm = _entityFormModalBody.firstElementChild;
+
+            // Get form URL and method
+            const entityFormURL = entityForm.action;
+            const entityFormMethod = entityForm.method;
+
+            // Get form data
+            const entityFormData = new FormData(entityForm);
+
+            // Make a request using fetch
+            fetch(entityFormURL, {
+                method: entityFormMethod,
+                body: entityFormData
+            })
+            .then(response => {
+                if (response.status === 403) { return response.text(); }
+                else { return Promise.resolve(); }
+            })
+            .then(html => {
+                if (html) { _entityFormModalBody.innerHTML = html; }
+                else
+                {
+                    _entityFormModal.hide();
+                    window.location.reload();
+                }
+            });
+        }
+
+
+        document.querySelectorAll('.trigger-entity-form-submit').forEach(trigger => {
+            trigger.addEventListener('click', submitEntityForm);
+        })
+
+
+        function entityCreate()
+        {
+            fetch(`/entities/{{ entity_code }}/new/form`)
+                .then(response => response.text())
+                .then(html => {
+                    _entityFormModalBody.innerHTML = html;
+                    _entityFormModal.show();
+                })
+                .catch(error => { console.error('Error fetching HTML:', error); });
+        }
+
+        function entityDelete(identity)
+        {
+            fetch(`/entities/{{ entity_code }}/${identity}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) { window.location.reload(); }
+                    else { console.log('Delete request failed:', response.status); }
+                }).catch(error => {console.error('Error:', error);});
+        }
+
+        function entityUpdate(identity)
+        {
+            fetch(`/entities/{{ entity_code }}/${identity}/form`)
+                .then(response => response.text())
+                .then(html => {
+                    _entityFormModalBody.innerHTML = html;
+                    _entityFormModal.show();
+                })
+                .catch(error => { console.error('Error fetching HTML:', error); });
+        }
+
+
+        document.querySelectorAll('.trigger-entity-action').forEach(trigger => {
+
+            function getEntityActionHandler()
+            {
+                switch (trigger.getAttribute('data-entity-action'))
+                {
+                    case 'create':
+                        return function() {
+                            entityCreate()
+                        };
+
+                    case 'delete':
+                        return function() {
+                            entityDelete(trigger.getAttribute('data-entity-identity'))
+                        };
+
+                    case 'update':
+                        return function() {
+                            entityUpdate(trigger.getAttribute('data-entity-identity'))
+                        };
+
+                    default:
+                        return function() { console.error('Invalid action specified') };
+                }
+            }
+
+            trigger.addEventListener('click', getEntityActionHandler());
+        });
+
+    </script>
+
+{% endblock %}

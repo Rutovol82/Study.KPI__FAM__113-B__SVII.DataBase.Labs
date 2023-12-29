@@ -84,7 +84,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: built query as :class:`pgsql.Composable`
@@ -117,7 +117,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: built query as :class:`pgsql.Composable`
@@ -140,7 +140,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: built query as :class:`pgsql.Composable`
@@ -163,7 +163,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: built query as :class:`pgsql.Composable`
@@ -238,7 +238,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: built query as :class:`pgsql.Composable`
@@ -264,7 +264,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :return: super pass subject ID :class:`pgsql.Placeholder` or :class:`pgsql.NULL`
@@ -288,7 +288,7 @@ class db_injector:
 
           ----
 
-        Note: `properties_` :class:`Collection` should not contain more than one set of suitable properties
+        **NOTE:** `properties_` :class:`Collection` should not contain more than one set of suitable properties
 
         :param properties_: property keys :class:`Collection`
         :param subject_code: current test pass subject code

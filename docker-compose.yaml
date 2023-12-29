@@ -3,6 +3,27 @@ version: '3.9'
 
 services:
 
+  web_manager:
+    build: ./web_manager/
+    environment:
+      - WEB_MANAGER_REPO__SQLALCHEMY_DATABASE=znoOData
+      - WEB_MANAGER_REPO__SQLALCHEMY_DRIVERNAME=postgresql+psycopg2
+      - WEB_MANAGER_REPO__SQLALCHEMY_HOST=database
+      - WEB_MANAGER_REPO__SQLALCHEMY_PASSWORD=do-not-expell-please
+      - WEB_MANAGER_REPO__SQLALCHEMY_PORT=5432
+      - WEB_MANAGER_REPO__SQLALCHEMY_USERNAME=Rutovol82
+      - WEB_MANAGER_SECRET_KEY=incredibly-secret-key
+    command: [ "python", "-m", "web_manager"]
+    networks:
+      - service_ntw
+    ports:
+      - "5000:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - web_manager
+
   # Service, runs V1.1 (#lab-1 #primary) schema database initialization
   # (will not have an effect if tables already exist)
   maintenance__v1.1__init-db:
